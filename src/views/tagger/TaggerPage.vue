@@ -91,7 +91,8 @@ const selectedMusic = ref<MusicObject>({
   albumArtist: '',
   genre: '',
   releaseDate: '',
-  fileName: ''
+  fileName: '',
+  lyrics: ''
 });
 const selectedQuery= ref<MusicObject>({
   title: '',
@@ -100,10 +101,13 @@ const selectedQuery= ref<MusicObject>({
   albumArtist: '',
   genre: '',
   releaseDate: '',
-  fileName: ''
+  fileName: '',
+  lyrics: ''
 });
 
 async function fetchMusicQuery(musicObj: MusicObject) {
+  if (musicObj.lyrics)
+    lyrics.value = musicObj.lyrics;
   isLoading.value = true;
   selectedMusic.value = musicObj;
   await getMusicQuery(selectedMusic.value)

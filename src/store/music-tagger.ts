@@ -58,6 +58,7 @@ export const useMusicTaggerStore = defineStore('musicTagger', {
           releaseDate: this.releaseDate.toISOString().split('T')[0],
           albumArtist: this.albumArtist,
           fileName: this.fileName,
+          lyrics: null,
         })
         .then()
         .finally(() => (this.isLoading = false));
@@ -79,6 +80,7 @@ export const useMusicTaggerStore = defineStore('musicTagger', {
           title: selectedMusic.title,
           albumArtist: selectedMusic.albumArtist,
           fileName: selectedMusic.fileName,
+          lyrics: null,
         })
         .then((response) => {
           console.log('getMusicQuery', response);

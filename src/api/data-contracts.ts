@@ -104,6 +104,8 @@ export interface MusicObject {
   fileName: string;
   /** Genre */
   genre: string;
+  /** Lyrics */
+  lyrics: string | null;
   /** Release Date */
   releaseDate: string | null;
   /** Title */

@@ -1,66 +1,62 @@
 <template>
   <v-sheet class="dashboard" fluid>
     <v-card>
-      <v-card-title class="text-h4" style="color: white">Enter your link below </v-card-title>
+      <v-card-title class="text-h4" style="color: white">Enter your link below</v-card-title>
       <v-card>
         <v-card-text>
           <v-row>
             <v-col cols="12">
-              <v-text-field variant="outlined" v-model="url" :disabled="isLoading" :loading="isLoading" label="Enter Link" />
+              <v-text-field variant="outlined" v-model="url" :disabled="isProcessRunning" :loading="isProcessRunning" label="Enter Link" />
             </v-col>
             <v-row class="pa-2">
               <v-col cols="3">
                 <v-btn-toggle v-model="downloadType" mandatory rounded="lg">
-                  <v-btn :loading="isLoading" value="single">Single</v-btn>
-                  <v-btn :loading="isLoading" value="playlist">Playlist</v-btn>
+                  <v-btn :loading="isProcessRunning" value="single">Single</v-btn>
+                  <v-btn :loading="isProcessRunning" value="playlist">Playlist</v-btn>
                 </v-btn-toggle>
               </v-col>
               <v-col cols="3">
                 <v-btn-toggle v-model="fileType" mandatory rounded="lg">
-                  <v-btn :loading="isLoading" value="music">Music</v-btn>
-                  <v-btn :loading="isLoading" value="video">Video</v-btn>
+                  <v-btn :loading="isProcessRunning" value="music">Music</v-btn>
+                  <v-btn :loading="isProcessRunning" value="video">Video</v-btn>
                 </v-btn-toggle>
               </v-col>
               <v-col cols="3"></v-col>
               <v-col cols="3">
-                <v-btn :loading="isLoading" color="primary" text="Submit Data" @click="onSubmit" height="98%" block></v-btn>
+                <v-btn :loading="isProcessRunning" color="primary" text="Submit Data" @click="onSubmit" height="98%" block></v-btn>
               </v-col>
             </v-row>
           </v-row>
         </v-card-text>
       </v-card>
     </v-card>
-<!--    <v-row class="mt-2">-->
-<!--      <v-col cols="6">-->
-<!--        <v-card style="max-height: 500px; height: 238px">-->
-<!--          <v-card-title> Progress </v-card-title>-->
-<!--          <v-card-subtitle>10/10</v-card-subtitle>-->
-<!--          <v-card-text style="text-align: center; height: 100%">-->
-<!--            <v-progress-circular :model-value="value" :rotate="360" :size="100" :width="15" color="teal">-->
-<!--              {{ value }}-->
-<!--            </v-progress-circular>-->
-<!--          </v-card-text>-->
-<!--        </v-card>-->
-<!--      </v-col>-->
-<!--      <v-col cols="6">-->
-<!--        <v-card>-->
-<!--          <v-card-title>Logs</v-card-title>-->
-<!--          <v-card-text>-->
-<!--            <v-textarea disabled />-->
-<!--          </v-card-text>-->
-<!--        </v-card>-->
-<!--      </v-col>-->
-<!--    </v-row>-->
+    <v-row class="mt-2">
+      <v-col cols="12yu">
+        <v-card>
+          <v-card-title>Logs</v-card-title>
+          <v-card-text>
+            <div class="log-window">
+              <div v-for="(log, index) in outputLog" :key="index">
+                <span :class="log.type">[{{ log.type }}]</span>: {{ log.message }}
+              </div>
+            </div>
+            <!--            <v-textarea disabled />-->
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
   </v-sheet>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onBeforeMount, onBeforeUnmount, ref } from 'vue';
 import { useMusicDownloaderStore } from '@/store/music-downloader';
 import { storeToRefs } from 'pinia';
+import { useAppStore } from '@/store/app';
 
-const { fetchSingleDownload, fetchPlaylistDownload, fetchSingleVideo, fetchPlaylistVideo } = useMusicDownloaderStore();
-const { url, downloadType, fileType, isLoading } = storeToRefs(useMusicDownloaderStore());
+const { fetchSingleDownload, fetchPlaylistDownload, fetchSingleVideo, fetchPlaylistVideo, onWebsocketMessageLog } = useMusicDownloaderStore();
+const { url, downloadType, fileType, isLoading, outputLog } = storeToRefs(useMusicDownloaderStore());
+const { isProcessRunning, ws } = storeToRefs(useAppStore());
 const value = ref(70);
 
 async function onSubmit() {
@@ -91,6 +87,14 @@ async function onSubmit() {
     }
   }
 }
+
+onBeforeMount(() => {
+  ws.value?.addHandler('message', onWebsocketMessageLog);
+});
+
+onBeforeUnmount(() => {
+  ws.value?.removeHandler('message', onWebsocketMessageLog);
+});
 </script>
 
 <style scoped>
@@ -101,9 +105,34 @@ async function onSubmit() {
   padding: 20px;
 }
 
-.v-btn {
-  background-color: #121212;
-  color: white;
-  font-weight: bold;
+.log-window {
+  width: 100%;
+  overflow-y: auto;
+  padding: 10px;
+  min-height: 175px;
+  background-color: #000000;
+  color: #ffffff;
+  font-family: monospace, monospace;
+  font-size: 12px;
+  box-shadow:
+    0px 3px 1px -2px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
+    0px 2px 2px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)),
+    0px 1px 5px 0px var(--v-shadow-key-ambient-opacity, rgba(0, 0, 0, 0.12));
+}
+
+.log {
+  color: #00ff00;
+}
+
+.error {
+  color: #ff0000;
+}
+
+.warning {
+  color: #ffff00;
+}
+
+.info {
+  color: #6495edff;
 }
 </style>

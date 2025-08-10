@@ -41,6 +41,7 @@ export const useAppStore = defineStore('appStore', {
         const payload = message.messagePayload;
         if (isPayloadProcess(payload)) {
           this.isProcessRunning = payload.isRunning;
+          console.log(">>> isProcessRunning:", this.isProcessRunning);
           // const scriptName = payload.scriptName;
           // const { selectedScriptName } = storeToRefs(useScriptListStore());
           // const { currentTab } = storeToRefs(useScriptDashboardStore());

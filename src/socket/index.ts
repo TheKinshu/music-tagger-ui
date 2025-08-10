@@ -22,7 +22,8 @@ export class WebSocketService {
   }
 
   private connect(): void {
-    const wsUrl = `${import.meta.env.VITE_APP_API_BASE_URL}/ws/console/${this.userId}`;
+    console.log(`${import.meta.env.VITE_APP_WS_URL}/ws/console/${this.userId}`);
+    const wsUrl = `${import.meta.env.VITE_APP_WS_URL}/ws/console/${this.userId}`;
     this.ws = new WebSocket(wsUrl);
 
     this.ws.onopen = () => {

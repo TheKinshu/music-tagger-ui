@@ -1,6 +1,7 @@
-import { acceptHMRUpdate, defineStore } from 'pinia';
+import { acceptHMRUpdate, defineStore, storeToRefs } from 'pinia';
 import apiClient from '@/api';
 import { MusicObject } from '@/api/data-contracts';
+import { useNotificationStore} from '@/store/notification';
 
 interface State {
   isLoading: boolean;
@@ -86,6 +87,11 @@ export const useMusicTaggerStore = defineStore('musicTagger', {
           console.log('getMusicQuery', response);
           console.log(response.data);
           this.queryList = response.data;
+        }).catch((error) => {
+          console.error('Error fetching music query:', error);
+          const { isVisible } = storeToRefs(useNotificationStore());
+          isVisible.value = true;
+          this.queryList = [];
         })
         .finally(() => (this.isLoading = false));
     },

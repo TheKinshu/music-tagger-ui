@@ -3,6 +3,7 @@
     <AppSideNavBar />
     <v-main>
       <v-container>
+        <notify/>
         <router-view v-slot="{ Component }">
           <v-slide-x-transition mode="out-in">
             <component :is="Component" />
@@ -19,6 +20,7 @@ import { WebSocketService } from '@/socket';
 import { useAppStore } from '@/store/app';
 import { storeToRefs } from 'pinia';
 import AppSideNavBar from '@/AppSideNavBar.vue';
+import Notify from '@/views/notify/notify.vue';
 
 const { onWebsocketConnected, onWebsocketDisconnected, onWebsocketMessageProcess } = useAppStore();
 const { ws, isOnline, isLoading, isProcessRunning } = storeToRefs(useAppStore());
